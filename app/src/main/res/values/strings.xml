@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Twitter Client</string>
+    <string name="timeline_title">Timeline</string>
+    <string name="logout">logout</string>
+    <string name="tweet_hint">What\'s going on?</string>
+    <string name="post_tweet">Post</string>
 
 </resources>

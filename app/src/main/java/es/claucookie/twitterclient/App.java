@@ -20,7 +20,7 @@ public class App extends Application {
     }
 
     private void initFabricSDK() {
-        TwitterAuthConfig authConfig =  new TwitterAuthConfig(BuildConfig.TWITTER_CONSUMER_KEY,
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(BuildConfig.TWITTER_CONSUMER_KEY,
                 BuildConfig.TWITTER_CONSUMER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
     }

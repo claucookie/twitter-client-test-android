@@ -1,4 +1,4 @@
-package es.claucookie.twitterclient;
+package es.claucookie.twitterclient.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,46 +9,51 @@ import android.view.View;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.SessionManager;
 import com.twitter.sdk.android.core.TwitterApiClient;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import es.claucookie.twitterclient.R;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
 
-
-    TwitterLoginButton loginButton;
-    View parentLayout;
+    @Bind(R.id.twitter_login_button) TwitterLoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        initViews();
+
+        ButterKnife.bind(this);
+        initTwitterButton();
+        checkTwitterSession();
     }
 
-    private void initViews() {
-        parentLayout = findViewById(R.id.parent_layout);
-        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+    private void checkTwitterSession() {
+        // If user already authenticated with twitter, show timeline
+        SessionManager<TwitterSession> sessionManager =  Twitter.getSessionManager();
+        if (sessionManager.getActiveSession() != null) {
+            loadTimelineActivity();
+        }
+    }
+
+    private void initTwitterButton() {
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                // Store twitter session data
-                TwitterSession session = Twitter.getSessionManager().getActiveSession();
-                TwitterAuthToken authToken = session.getAuthToken();
-                String token = authToken.token;
-                String secret = authToken.secret;
-
-                loadTweetsTest();
+                loadTimelineActivity();
             }
 
             @Override
@@ -58,24 +63,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loadTweetsTest() {
-        TwitterApiClient twitterApiClient = Twitter.getApiClient();
-        StatusesService statusesService = twitterApiClient.getStatusesService();
-        statusesService.userTimeline(null, null, 20, null, null, null, null, null, null, new Callback<List<Tweet>>() {
-            @Override
-            public void success(Result<List<Tweet>> result) {
-
-            }
-
-            @Override
-            public void failure(TwitterException e) {
-
-            }
-        });
+    private void loadTimelineActivity() {
+        Intent timelineIntent = new Intent(this, TimelineActivity.class);
+        startActivity(timelineIntent);
+        finish();
     }
 
     /**
-     *
      * Listeners and callbacks
      */
     @Override
